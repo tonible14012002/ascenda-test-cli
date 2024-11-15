@@ -25,12 +25,12 @@ type Amenities struct {
 }
 
 type Hotel struct {
-	Id            string `json:"id"`
-	DestinationId int    `json:"destination_id"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Location      `json:"location"`
-	Amenities     Amenities `json:"amenities"`
-	Images        `json:"images"`
+	Id            string   `json:"id"`
+	DestinationId int      `json:"destination_id"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
 	Condition     []string `json:"booking_condition"`
+	Location      `json:"location"`
+	Amenities     `json:"amenities"`
+	Images        `json:"images"`
 }
