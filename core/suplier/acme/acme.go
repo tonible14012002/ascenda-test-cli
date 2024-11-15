@@ -2,7 +2,6 @@ package acme
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"tonible14012002/ascenda-test-cli/core/domain"
@@ -40,39 +39,14 @@ func (s *AcmeSuplier) GetHotels() ([]domain.Hotel, *domain.Error) {
 
 	var acmeHotels []AcmeHotel
 	if err := json.Unmarshal(body, &acmeHotels); err != nil {
-		fmt.Println("Error reading response body:", err)
 		return nil, domain.NewErr("Error decoding Json", http.StatusInternalServerError)
 	}
+
 	hotels := make([]domain.Hotel, 0, len(acmeHotels))
+
 	for _, h := range acmeHotels {
-		hotels = append(hotels, acmeHotelToDomain(h))
+		hotels = append(hotels, h.ToDomainType())
 	}
 
 	return hotels, nil
-}
-
-func acmeHotelToDomain(h AcmeHotel) domain.Hotel {
-	return domain.Hotel{
-		Id:            h.ID,
-		Name:          h.Name,
-		DestinationId: h.DestinationID,
-		Description:   h.Description,
-		Location: domain.Location{
-			Long:    h.Longitude,
-			Lat:     h.Latitude,
-			Address: h.Address,
-			City:    h.City,
-			Country: h.Country,
-		},
-		Amenities: domain.Amenities{
-			General: make([]string, 0),
-			Room:    make([]string, 0),
-		},
-		Images: domain.Images{
-			Site:      make([]domain.Image, 0),
-			Rooms:     make([]domain.Image, 0),
-			Amenities: make([]domain.Image, 0),
-		},
-		Condition: make([]string, 0),
-	}
 }
