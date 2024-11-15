@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"tonible14012002/ascenda-test-cli/core/port"
 	"tonible14012002/ascenda-test-cli/core/service/hotel"
@@ -29,7 +30,11 @@ func main() {
 		},
 	})
 
-	hotels, err := hotelService.Get("123123", "11e1efawefa9ewf")
+	hotels, err := hotelService.Get("hotelId", "destinationId")
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Print(hotels, err)
+	jsonResults, _ := json.MarshalIndent(hotels, "", "  ")
+	fmt.Println(string(jsonResults))
 }
