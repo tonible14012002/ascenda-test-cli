@@ -16,7 +16,7 @@ type NewPatagoniaSuplierParams struct {
 	Url string
 }
 
-func NewSuplier(params NewPatagoniaSuplierParams) port.Suplier {
+func New(params NewPatagoniaSuplierParams) port.Suplier {
 	return &PatagoniaSuplier{
 		url: params.Url,
 	}

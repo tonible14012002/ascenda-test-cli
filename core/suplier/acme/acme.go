@@ -16,7 +16,7 @@ type NewAcmeSuplierParams struct {
 	Url string
 }
 
-func NewSuplier(params NewAcmeSuplierParams) port.Suplier {
+func New(params NewAcmeSuplierParams) port.Suplier {
 	return &AcmeSuplier{
 		url: params.Url,
 	}

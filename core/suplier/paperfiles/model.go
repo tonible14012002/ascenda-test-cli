@@ -46,6 +46,7 @@ func (p PaperFliesHotel) ToDomainType() (dh domain.Hotel) {
 	dh.Amenities.General = p.Amenities.General
 	dh.Amenities.Room = p.Amenities.Room
 	dh.Images.Rooms = make([]domain.Image, 0, len(p.Images.Rooms))
+
 	for _, r := range p.Images.Rooms {
 		dh.Images.Rooms = append(dh.Images.Rooms, domain.Image{
 			Link: r.Link,
@@ -53,6 +54,7 @@ func (p PaperFliesHotel) ToDomainType() (dh domain.Hotel) {
 		})
 	}
 	dh.Images.Site = make([]domain.Image, 0, len(p.Images.Site))
+
 	for _, s := range p.Images.Site {
 		dh.Images.Site = append(dh.Images.Site, domain.Image{
 			Link: s.Link,

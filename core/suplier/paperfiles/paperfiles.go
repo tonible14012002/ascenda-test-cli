@@ -16,7 +16,7 @@ type NewPaperFliesSuplierParams struct {
 	Url string
 }
 
-func NewSuplier(params NewPaperFliesSuplierParams) port.Suplier {
+func New(params NewPaperFliesSuplierParams) port.Suplier {
 	return &PaperFliesHotelSuplier{
 		url: params.Url,
 	}

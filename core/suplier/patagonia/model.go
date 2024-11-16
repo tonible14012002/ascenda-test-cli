@@ -43,7 +43,7 @@ func (p *PatagoniaHotel) ToDomainType() (dh domain.Hotel) {
 		dh.Location.Address = *p.Address
 	}
 
-	dh.Amenities.General = p.Aminities
+	dh.Amenities.Room = p.Aminities
 
 	if p.Images != nil {
 		for _, room := range p.Images.Rooms {
