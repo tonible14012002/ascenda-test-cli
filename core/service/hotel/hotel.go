@@ -97,6 +97,10 @@ func (s Service) merge(base domain.Hotel, h domain.Hotel) domain.Hotel {
 
 	base.Amenities.Room = mergeutils.PickLongerSlice(base.Amenities.Room, h.Amenities.Room)
 
+	for i := 0; i < len(base.Amenities.Room); i++ {
+		base.Amenities.Room[i] = mergeutils.RemoveRedundantSpaces(base.Amenities.Room[i])
+	}
+
 	base.Images.Rooms = append(base.Images.Rooms, h.Images.Rooms...)
 	base.Images.Site = append(base.Images.Site, h.Images.Site...)
 	base.Images.Amenities = append(base.Images.Amenities, h.Images.Amenities...)
