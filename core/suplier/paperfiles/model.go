@@ -33,7 +33,7 @@ type PaperFliesHotel struct {
 	BookingConditions []string  `json:"booking_conditions"`
 }
 
-func (p PaperFliesHotel) ToDomainType() (dh domain.Hotel) {
+func (p PaperFliesHotel) ToDomain() (dh domain.Hotel) {
 	dh.Id = p.HotelID
 	dh.DestinationId = p.DestinationID
 	if p.HotelName != nil {

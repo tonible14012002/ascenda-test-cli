@@ -24,7 +24,7 @@ type PatagoniaHotel struct {
 	Images        *Images          `json:"images,omitempty"`
 }
 
-func (p *PatagoniaHotel) ToDomainType() (dh domain.Hotel) {
+func (p *PatagoniaHotel) ToDomain() (dh domain.Hotel) {
 	dh.Id = p.ID
 	dh.DestinationId = p.DestinationID
 	if p.Name != nil {

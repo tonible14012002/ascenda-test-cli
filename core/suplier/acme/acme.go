@@ -8,6 +8,8 @@ import (
 	"tonible14012002/ascenda-test-cli/core/ultils/fetchutils"
 )
 
+const source = "acme"
+
 type AcmeSuplier struct {
 	url string
 }
@@ -36,8 +38,14 @@ func (s *AcmeSuplier) GetHotels() ([]domain.Hotel, *domain.Error) {
 	hotels := make([]domain.Hotel, 0, len(acmeHotels))
 
 	for _, h := range acmeHotels {
-		hotels = append(hotels, h.ToDomainType())
+		domainHotel := h.ToDomain()
+		domainHotel.SetSource(source)
+		hotels = append(hotels, domainHotel)
 	}
 
 	return hotels, nil
+}
+
+func (s *AcmeSuplier) GetSourceName() string {
+	return source
 }

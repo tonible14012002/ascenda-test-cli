@@ -20,6 +20,33 @@ func (s *InmemoryStore) Save(hotels []domain.Hotel) *domain.Error {
 	return nil
 }
 
-func (s *InmemoryStore) Find(ID string, DesID int) ([]domain.Hotel, *domain.Error) {
-	return s.hotels, nil
+func (s *InmemoryStore) List(ids []string, desIds []int) []domain.Hotel {
+	var filtered []domain.Hotel
+
+	// If no hotelIDs and destinationIDs are provided, return all hotels
+	if len(ids) == 0 && len(desIds) == 0 {
+		return s.hotels
+	}
+
+	// // Filter hotels
+	for _, hotel := range s.hotels {
+		if len(ids) > 0 && !contains(ids, hotel.Id) {
+			continue
+		}
+		if len(desIds) > 0 && !contains(desIds, hotel.DestinationId) {
+			continue
+		}
+		filtered = append(filtered, hotel)
+	}
+
+	return filtered
+}
+
+func contains[T comparable](list []T, value T) bool {
+	for _, item := range list {
+		if item == value {
+			return true
+		}
+	}
+	return false
 }

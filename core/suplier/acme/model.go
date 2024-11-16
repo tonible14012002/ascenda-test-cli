@@ -18,7 +18,7 @@ type AcmeHotel struct {
 	Facilities    []string         `json:"Facilities,omitempty"`
 }
 
-func (h AcmeHotel) ToDomainType() (dh domain.Hotel) {
+func (h AcmeHotel) ToDomain() (dh domain.Hotel) {
 	// sanitized field
 	dh.Id = h.ID
 	dh.DestinationId = h.DestinationID
