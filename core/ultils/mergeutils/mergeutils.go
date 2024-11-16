@@ -1,6 +1,7 @@
 package mergeutils
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -47,4 +48,12 @@ func CapitalizeFirstLetters(input string) string {
 		}
 	}
 	return strings.Join(words, " ")
+}
+
+func PascalToSentence(input string) string {
+	// Use a regular expression to add spaces before uppercase letters (except the first one)
+	re := regexp.MustCompile(`([a-z])([A-Z])`)
+	result := re.ReplaceAllString(input, `${1} ${2}`)
+	// Convert the entire string to lowercase and capitalize the first letter
+	return strings.ToUpper(result[:1]) + strings.ToLower(result[1:])
 }
