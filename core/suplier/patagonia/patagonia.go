@@ -1,9 +1,11 @@
 package patagonia
 
 import (
+	"encoding/json"
 	"net/http"
 	"tonible14012002/ascenda-test-cli/core/domain"
 	"tonible14012002/ascenda-test-cli/core/port"
+	"tonible14012002/ascenda-test-cli/core/ultils/fetchutils"
 )
 
 type PatagoniaSuplier struct {
@@ -14,16 +16,28 @@ type NewPatagoniaSuplierParams struct {
 	Url string
 }
 
-func NewSuplier(params NewPatagoniaSuplierParams) port.Suplier {
+func New(params NewPatagoniaSuplierParams) port.Suplier {
 	return &PatagoniaSuplier{
 		url: params.Url,
 	}
 }
 
 func (s *PatagoniaSuplier) GetHotels() ([]domain.Hotel, *domain.Error) {
-	_, err := http.Get(s.url)
-	if err != nil {
-		return nil, domain.NewErr("Error getting Patagonia hotels", http.StatusInternalServerError)
+	body, ferr := fetchutils.FetchJSON(s.url)
+	if ferr != nil {
+		return nil, ferr
 	}
-	return nil, nil
+
+	var patagoniaHotels []PatagoniaHotel
+	if err := json.Unmarshal(body, &patagoniaHotels); err != nil {
+		return nil, domain.NewErr("Error decoding Json", http.StatusInternalServerError)
+	}
+
+	hotels := make([]domain.Hotel, 0, len(patagoniaHotels))
+
+	for _, h := range patagoniaHotels {
+		hotels = append(hotels, h.ToDomainType())
+	}
+
+	return hotels, nil
 }
