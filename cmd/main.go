@@ -25,6 +25,10 @@ type Params struct {
 }
 
 func parseParams(args []string) (Params, error) {
+
+	if len(os.Args) < 3 {
+		return Params{}, errors.New("Usage: my_hotel_merger <hotel_ids:[]string> <destination_ids:int[]>")
+	}
 	if len(args) < 2 {
 		return Params{}, errors.New("insufficient arguments, requires hotel_ids and destination_ids")
 	}
@@ -66,11 +70,6 @@ func parseList(input string) []string {
 func main() {
 
 	log := logger.New()
-
-	if len(os.Args) < 3 {
-		log.Info("Usage: my_hotel_merger <hotel_ids:[]string> <destination_ids:int[]>")
-		return
-	}
 
 	params, pErr := parseParams(os.Args[1:])
 
@@ -138,6 +137,7 @@ func main() {
 		HotelMerger: hotelMerger,
 	})
 
+	// RUN
 	hotels, err := hotelService.Filter(domain.HotelsQuery{
 		HotelIDs:       params.HotelIDs,
 		DestinationIDs: params.DestinationIDs,
