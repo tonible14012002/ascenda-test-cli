@@ -8,9 +8,10 @@ import (
 	"strconv"
 	"strings"
 	"tonible14012002/ascenda-test-cli/core/domain"
-	"tonible14012002/ascenda-test-cli/core/formater"
 	"tonible14012002/ascenda-test-cli/core/port"
 	"tonible14012002/ascenda-test-cli/core/service/hotel"
+	"tonible14012002/ascenda-test-cli/internal/formater"
+	"tonible14012002/ascenda-test-cli/internal/merger"
 	"tonible14012002/ascenda-test-cli/internal/repository/inmemory"
 	"tonible14012002/ascenda-test-cli/internal/suplier/acme"
 	"tonible14012002/ascenda-test-cli/internal/suplier/paperfiles"
@@ -100,7 +101,7 @@ func main() {
 	// init store
 	hotelRepository := inmemory.NewHotelRepository()
 
-	formatProvider := formater.NewFormatProvider([]port.Formatter{
+	formatProvider := port.NewFormatProvider([]port.Formatter{
 		formater.NewCapitalizeInfoFormatter([]string{
 			acmeSuplier.GetSourceName(),
 			patagoniaSuplier.GetSourceName(),
@@ -115,7 +116,16 @@ func main() {
 			patagoniaSuplier.GetSourceName(),
 			paperfliesSuplier.GetSourceName(),
 		}),
+		formater.NewConditionBookingFormatter([]string{
+			paperfliesSuplier.GetSourceName(),
+		}),
 	})
+
+	hotelMerger := merger.NewHotelSimpleMerger(
+		merger.HotelMergerParams{
+			FormatProvider: formatProvider,
+		},
+	)
 
 	// service
 	hotelService := hotel.New(hotel.ServiceParams{
@@ -125,7 +135,7 @@ func main() {
 			patagoniaSuplier,
 			paperfliesSuplier,
 		},
-		FormatProvider: formatProvider,
+		HotelMerger: hotelMerger,
 	})
 
 	hotels, err := hotelService.Filter(domain.HotelsQuery{

@@ -2,34 +2,34 @@ package hotel
 
 import (
 	"tonible14012002/ascenda-test-cli/core/domain"
-	"tonible14012002/ascenda-test-cli/core/formater"
 	"tonible14012002/ascenda-test-cli/core/port"
 )
 
 type Service struct {
 	supliers        []port.Suplier
 	hotelRepository port.HotelRepository
-	formatProvider  *formater.FormatProvider
+	formatProvider  *port.FormatProvider
+	hotelMerger     port.HotelMerger
 }
 
 type ServiceParams struct {
 	Supliers []port.Suplier
 	port.HotelRepository
-	*formater.FormatProvider
+	port.HotelMerger
 }
 
 func New(params ServiceParams) *Service {
 	return &Service{
 		supliers:        params.Supliers,
 		hotelRepository: params.HotelRepository,
-		formatProvider:  params.FormatProvider,
+		hotelMerger:     params.HotelMerger,
 	}
 }
 
 func (s *Service) Filter(q domain.HotelsQuery) ([]domain.Hotel, *domain.Error) {
 	unmergedHotels, err := s.fetchUnmerged()
 
-	hotels := s.mergeHotelsByID(unmergedHotels)
+	hotels := s.hotelMerger.MergeHotels(unmergedHotels)
 
 	if err != nil {
 		return nil, err
@@ -49,25 +49,4 @@ func (s *Service) fetchUnmerged() ([]domain.Hotel, *domain.Error) {
 		hotels = append(hotels, hs...)
 	}
 	return hotels, nil
-}
-
-func (s *Service) mergeHotelsByID(unmergedHotels []domain.Hotel) []domain.Hotel {
-	hotelMapper := make(map[string]domain.Hotel)
-
-	// Merge matching hotels
-	for _, h := range unmergedHotels {
-		if _, existed := hotelMapper[h.Id]; existed {
-			hotelMapper[h.Id] = hotelMapper[h.Id].Merge(s.formatProvider.Format(h))
-		} else {
-			hotelMapper[h.Id] = s.formatProvider.Format(h)
-		}
-	}
-
-	// Convert to slice
-	merged := make([]domain.Hotel, 0, len(hotelMapper))
-	for _, h := range hotelMapper {
-		merged = append(merged, h)
-	}
-
-	return merged
 }
