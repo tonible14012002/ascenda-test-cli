@@ -38,6 +38,11 @@ type Hotel struct {
 	Images        `json:"images"`
 }
 
+type HotelsQuery struct {
+	HotelIDs       []string
+	DestinationIDs []int
+}
+
 func (h Hotel) GetSource() string {
 	return h.source
 }

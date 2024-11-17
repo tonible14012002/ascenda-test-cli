@@ -1,23 +1,42 @@
+# Makefile for Go project dependencies setup
 
-setup:
-	@echo "Setting up the project dependencies ..."
-	@make tidy 
-	@make deps-upgrade
+# Default target: set up project dependencies
+setup: tidy deps-upgrade
 	@echo "Project dependencies are set up."
 
-# ~~~ Modules support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+build:
+	@echo "Building the project..."
+	@go build -o bin/ ./cmd/main.go
+	@echo "done build"
+
+chmod-runner:
+	@chmod +x ./runner
+	
+# Tidy up the Go modules
 tidy:
-	go mod tidy
+	@echo "Tidying Go modules..."
+	@go mod tidy
+	@echo "done"
 
-deps-reset:
-	git checkout -- go.mod
-	go mod tidy
-
+# Upgrade all dependencies
 deps-upgrade:
-	go get -u -t -d -v ./...
-	go mod tidy
+	@echo "Upgrading dependencies..."
+	@go get -u -t -d -v ./...
+	@go mod tidy
+	@echo "done"
 
-deps-cleancache:
-	go clean -modcache
+# # Reset dependencies to the state in go.mod
+# deps-reset:
+# 	@echo "Resetting dependencies..."
+# 	git checkout -- go.mod
+# 	go mod tidy
 
-.PHONY: setup
+
+# # Clean Go module cache
+# deps-cleancache:
+# 	@echo "Cleaning module cache..."
+# 	@go clean -modcache
+# 	@echo "done"
+
+# Declare targets as phony
+.PHONY: setup tidy deps-reset deps-upgrade deps-cleancache

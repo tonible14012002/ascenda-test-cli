@@ -10,15 +10,15 @@ type DescFormatter struct {
 	ApplySources []string
 }
 
-func NewDescFormatter(Names []string) *DescFormatter {
+func NewDescFormatter(names []string) *DescFormatter {
 	return &DescFormatter{
-		ApplySources: Names,
+		ApplySources: names,
 	}
 }
 
-func (f *DescFormatter) IsApplicable(SourceName string) bool {
+func (f *DescFormatter) IsApplicable(s string) bool {
 	for _, v := range f.ApplySources {
-		if v == SourceName {
+		if v == s {
 			return true
 		}
 	}

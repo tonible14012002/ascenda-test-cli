@@ -9,15 +9,15 @@ type PascalToSentenceFormatter struct {
 	ApplySources []string
 }
 
-func NewPascalToSentenceFormatter(Names []string) *PascalToSentenceFormatter {
+func NewPascalToSentenceFormatter(names []string) *PascalToSentenceFormatter {
 	return &PascalToSentenceFormatter{
-		ApplySources: Names,
+		ApplySources: names,
 	}
 }
 
-func (f *PascalToSentenceFormatter) IsApplicable(SourceName string) bool {
+func (f *PascalToSentenceFormatter) IsApplicable(s string) bool {
 	for _, v := range f.ApplySources {
-		if v == SourceName {
+		if v == s {
 			return true
 		}
 	}
