@@ -7,26 +7,26 @@ import (
 )
 
 type Service struct {
-	supliers       []port.Suplier
-	store          port.Store
-	formatProvider *formater.FormatProvider
+	supliers        []port.Suplier
+	hotelRepository port.HotelRepository
+	formatProvider  *formater.FormatProvider
 }
 
 type ServiceParams struct {
-	Supliers       []port.Suplier
-	Store          port.Store
-	FormatProvider *formater.FormatProvider
+	Supliers []port.Suplier
+	port.HotelRepository
+	*formater.FormatProvider
 }
 
 func New(params ServiceParams) *Service {
 	return &Service{
-		supliers:       params.Supliers,
-		store:          params.Store,
-		formatProvider: params.FormatProvider,
+		supliers:        params.Supliers,
+		hotelRepository: params.HotelRepository,
+		formatProvider:  params.FormatProvider,
 	}
 }
 
-func (s *Service) Filter(hotelIds []string, destinationIds []int) ([]domain.Hotel, *domain.Error) {
+func (s *Service) Filter(q domain.HotelsQuery) ([]domain.Hotel, *domain.Error) {
 	unmergedHotels, err := s.fetchUnmerged()
 
 	hotels := s.mergeHotelsByID(unmergedHotels)
@@ -35,8 +35,8 @@ func (s *Service) Filter(hotelIds []string, destinationIds []int) ([]domain.Hote
 		return nil, err
 	}
 
-	s.store.Save(hotels)
-	return s.store.List(hotelIds, destinationIds), nil
+	s.hotelRepository.Save(hotels)
+	return s.hotelRepository.List(q), nil
 }
 
 func (s *Service) fetchUnmerged() ([]domain.Hotel, *domain.Error) {
@@ -44,7 +44,7 @@ func (s *Service) fetchUnmerged() ([]domain.Hotel, *domain.Error) {
 	for _, s := range s.supliers {
 		hs, err := s.GetHotels()
 		if err != nil {
-			continue
+			return nil, err
 		}
 		hotels = append(hotels, hs...)
 	}

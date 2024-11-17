@@ -2,17 +2,20 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+	"tonible14012002/ascenda-test-cli/core/domain"
 	"tonible14012002/ascenda-test-cli/core/formater"
 	"tonible14012002/ascenda-test-cli/core/port"
 	"tonible14012002/ascenda-test-cli/core/service/hotel"
-	"tonible14012002/ascenda-test-cli/core/store"
-	"tonible14012002/ascenda-test-cli/core/suplier/acme"
-	"tonible14012002/ascenda-test-cli/core/suplier/paperfiles"
-	"tonible14012002/ascenda-test-cli/core/suplier/patagonia"
+	"tonible14012002/ascenda-test-cli/internal/repository/inmemory"
+	"tonible14012002/ascenda-test-cli/internal/suplier/acme"
+	"tonible14012002/ascenda-test-cli/internal/suplier/paperfiles"
+	"tonible14012002/ascenda-test-cli/internal/suplier/patagonia"
+	"tonible14012002/ascenda-test-cli/logger"
 )
 
 type Params struct {
@@ -22,7 +25,7 @@ type Params struct {
 
 func parseParams(args []string) (Params, error) {
 	if len(args) < 2 {
-		return Params{}, fmt.Errorf("insufficient arguments: requires hotel_ids and destination_ids")
+		return Params{}, errors.New("insufficient arguments, requires hotel_ids and destination_ids")
 	}
 	var hotelIDs []string
 	if args[0] == "none" {
@@ -61,15 +64,18 @@ func parseList(input string) []string {
 
 func main() {
 
+	log := logger.New()
+
 	if len(os.Args) < 3 {
-		fmt.Println("Usage: my_hotel_merger <hotel_ids:[]string> <destination_ids:int[]>")
+		log.Info("Usage: my_hotel_merger <hotel_ids:[]string> <destination_ids:int[]>")
 		return
 	}
 
 	params, pErr := parseParams(os.Args[1:])
+
 	if pErr != nil {
-		fmt.Println("Error:", pErr)
-		os.Exit(1)
+		log.Error(pErr.Error())
+		return
 	}
 
 	// init supliers
@@ -92,7 +98,7 @@ func main() {
 	)
 
 	// init store
-	store := store.New()
+	hotelRepository := inmemory.NewHotelRepository()
 
 	formatProvider := formater.NewFormatProvider([]port.Formatter{
 		formater.NewCapitalizeInfoFormatter([]string{
@@ -113,7 +119,7 @@ func main() {
 
 	// service
 	hotelService := hotel.New(hotel.ServiceParams{
-		Store: store,
+		HotelRepository: hotelRepository,
 		Supliers: []port.Suplier{
 			acmeSuplier,
 			patagoniaSuplier,
@@ -122,11 +128,21 @@ func main() {
 		FormatProvider: formatProvider,
 	})
 
-	hotels, err := hotelService.Filter(params.HotelIDs, params.DestinationIDs)
+	hotels, err := hotelService.Filter(domain.HotelsQuery{
+		HotelIDs:       params.HotelIDs,
+		DestinationIDs: params.DestinationIDs,
+	})
+
 	if err != nil {
-		panic(err)
+		log.Error(err.Message)
+		return
 	}
 
-	jsonResults, _ := json.MarshalIndent(hotels, "", "  ")
-	fmt.Println(string(jsonResults))
+	jsonResults, mError := json.MarshalIndent(hotels, "", "  ")
+	if mError != nil {
+		log.Error(mError.Error())
+		return
+	}
+
+	log.Print(string(jsonResults))
 }

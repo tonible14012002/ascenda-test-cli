@@ -9,15 +9,15 @@ type CapitalizeFormatter struct {
 	ApplySources []string
 }
 
-func NewCapitalizeInfoFormatter(Names []string) *CapitalizeFormatter {
+func NewCapitalizeInfoFormatter(names []string) *CapitalizeFormatter {
 	return &CapitalizeFormatter{
-		ApplySources: Names,
+		ApplySources: names,
 	}
 }
 
-func (f *CapitalizeFormatter) IsApplicable(SourceName string) bool {
+func (f *CapitalizeFormatter) IsApplicable(s string) bool {
 	for _, v := range f.ApplySources {
-		if v == SourceName {
+		if v == s {
 			return true
 		}
 	}
